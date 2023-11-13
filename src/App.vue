@@ -1,42 +1,69 @@
 <template></template>
 
 <script>
+// TODO fb login get user_id, token
+// TODO get page token
 // TODO env
 // TODO separate component
-// TODO store token in memory
+// TODO handle page paginate
 // TODO store token in firebase
 const facebookAppId = 246637738109326
 const pageId = 171613189363559
-const access_token = 'EAADgUNLEqY4BO8pgbZA1wyDpqE5niBTZBrEmGifrQECBmszpI9EvOw9KZCKZA1hDvYyDwwiAsp0NxzSgZBZBWiG3K7ZCdEZCAHZBwh9QkWY4dITBWhINhRZCTpl3N5innunPnAm1TJijMcBZAPkJOctL5BD466auNxxXiNTDbvqob4Wk7sdYOijMW0f9V21gwaYkQbO6TwufeUXcOU8TLCOwStzbfMineyZCuxVwrK7nKOLp'
+const access_token = ''
 
 const FB = await getFbSdk()
+getFbPageComments(pageId)
 
-FB.api(
-  `/${pageId}/feed`,
-  'get',
-  { 'access_token': access_token },
-  function (response) {
-    if (response && !response.error) {
-      console.log('posts', response)
-    } else {
-      console.log('error', response.error)
-    }
-  }
-);
+async function getFbPageComments(pageId) {
+  try {
+    let posts = await getFbPosts(pageId)
 
-const postId = '171613189363559_122107944680099772'
-FB.api(
-  `/${postId}/comments`,
-  'get',
-  { 'access_token': access_token },
-  function (response) {
-    if (response && !response.error) {
-      console.log('comments', response)
-    } else {
-      console.log('error', response.error)
+    let res = []
+    for (let post of posts) {
+      let comments = await getFbComments(post.id)
+      post['comments'] = comments.map(a => a.message)
+      res.push(post)
     }
+
+    console.log(res)
+  } catch (error) {
+    console.error(error)
   }
-)
+}
+
+function getFbPosts(pageId) {
+  return new Promise(function (resolve, reject) {
+    FB.api(
+      `/${pageId}/feed`,
+      'get',
+      { 'access_token': access_token },
+      function (response) {
+        if (response && !response.error) {
+          resolve(response.data)
+        } else {
+          reject(response.error)
+        }
+      }
+    )
+  });
+}
+
+function getFbComments(postId) {
+  return new Promise(function (resolve, reject) {
+    FB.api(
+      `/${postId}/comments`,
+      'get',
+      { 'access_token': access_token },
+      function (response) {
+        if (response && !response.error) {
+          resolve(response.data)
+        } else {
+          reject(response.error)
+        }
+      }
+    )
+  })
+}
 
 function initFacebookSdk() {
   return new Promise(resolve => {
