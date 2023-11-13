@@ -7,20 +7,36 @@
 // TODO store token in firebase
 const facebookAppId = 246637738109326
 const pageId = 171613189363559
+const access_token = 'EAADgUNLEqY4BO8pgbZA1wyDpqE5niBTZBrEmGifrQECBmszpI9EvOw9KZCKZA1hDvYyDwwiAsp0NxzSgZBZBWiG3K7ZCdEZCAHZBwh9QkWY4dITBWhINhRZCTpl3N5innunPnAm1TJijMcBZAPkJOctL5BD466auNxxXiNTDbvqob4Wk7sdYOijMW0f9V21gwaYkQbO6TwufeUXcOU8TLCOwStzbfMineyZCuxVwrK7nKOLp'
 
 const FB = await getFbSdk()
+
 FB.api(
   `/${pageId}/feed`,
   'get',
-  { 'access_token': 'EAADgUNLEqY4BOZBfZBZA9WmUrr8geY3ZBBQ6zhBAsdO0PV18auyYaZBEl8d77hDw6MmRqboKNJH8TzatUXYeJ19HU785JnoxqRpyC6n9tDkzHNJLt4naPpeeECbQDPyzMab9ZBWgyWa6Y03GpE53vOHTAwqJxCSKvG1eWIetewwe9WRxSJZBq0olY3h9iP5qqkHfpyNoSbc1ZC7sClp9719RKSLHyULXnEdOKFB6DvIZD' },
+  { 'access_token': access_token },
   function (response) {
     if (response && !response.error) {
-      console.log(response)
+      console.log('posts', response)
     } else {
       console.log('error', response.error)
     }
   }
 );
+
+const postId = '171613189363559_122107944680099772'
+FB.api(
+  `/${postId}/comments`,
+  'get',
+  { 'access_token': access_token },
+  function (response) {
+    if (response && !response.error) {
+      console.log('comments', response)
+    } else {
+      console.log('error', response.error)
+    }
+  }
+)
 
 function initFacebookSdk() {
   return new Promise(resolve => {
